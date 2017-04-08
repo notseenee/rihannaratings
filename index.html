@@ -108,6 +108,7 @@
     <button id="new" class="mdl-button mdl-js-button mdl-button--colored mdl-js-ripple-effect rated">New rating</button>
 
     <script>
+      var fontStack = ' -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif';
       if (window.location.hash) {
         var hash = window.location.hash.substr(1),
         slashPos = hash.indexOf('/'),
@@ -171,10 +172,13 @@
             ctx.fill();
 
             ctx.fillStyle = '#f44336';
-            ctx.font = 'bold 144px -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif';
+            ctx.font = 'bold 144px' + fontStack;
             ctx.textAlign = 'right';
-            ctx.textBaseline = 'middle';
-            ctx.fillText(num + ' / ' + den, width/2, 92);
+            ctx.textBaseline = 'bottom';
+            ctx.fillText(num, 585, 176);
+            
+            ctx.textAlign = 'left';
+            ctx.fillText(den, 700, 176);
 
             ctx.beginPath();
             ctx.moveTo(650, 52);
@@ -184,13 +188,12 @@
             ctx.fill();
 
             ctx.textAlign = 'center';
-            ctx.font = 'bold 64px -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif';
+            ctx.font = 'bold 64px' + fontStack;
             ctx.fillStyle = '#999';
-            ctx.textBaseline = 'top';
-            ctx.fillText('RIHANNAS', width/2, 156);
+            ctx.fillText('RIHANNAS', width/2, 234);
 
-            ctx.font = '64px system, -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif';
-            ctx.fillText('rihannaratings.tk', width/2, 1180, width);
+            ctx.font = '64px' + fontStack;
+            ctx.fillText('rihannaratings.tk', width/2, 1260, width);
 
             var img = new Image(),
                 sizeDetermined = false,
