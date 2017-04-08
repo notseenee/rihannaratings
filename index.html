@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html manifest="manifest.appcach">
+<html manifest="manifest.appcache">
 
   <head>
     <meta charset="utf-8">
@@ -176,7 +176,7 @@
             ctx.textAlign = 'right';
             ctx.textBaseline = 'bottom';
             ctx.fillText(num, 585, 176);
-            
+
             ctx.textAlign = 'left';
             ctx.fillText(den, 700, 176);
 
@@ -254,18 +254,14 @@
     <script>function appCacheNotifierOpen(e,a){appCacheNotifier.style.display="block",appCacheNotifier.className="active",appCacheNotifier.innerHTML=e,console.log("[appCache] "+a+" - Notifer message: "+e)}function appCacheNotifierClose(){appCacheNotifier.className="",setTimeout(function(){appCacheNotifier.style.display="none"},200)}var fireEvent=function(e,a){var i=document.createEvent("Event");i.initEvent(e,!0,!0),i.data=a,window.dispatchEvent(i)},fetch=function(e){var i=new XMLHttpRequest,n=setTimeout(function(){i.abort()},maxWaitTime);i.onreadystatechange=function(){4==i.readyState&&(200==i.status?clearTimeout(n):fireEvent("connectionerror",{}))},i.open("GET",e),i.send()},appCache=window.applicationCache,appCacheNotifier=document.getElementById("appCacheNotifier"),appCacheSize,bodyClass=document.body.className;appCache.status==window.applicationCache.UPDATEREADY&&appCache.swapCache(),window.addEventListener("load",function(){document.getElementById("appCacheNotifier").addEventListener("click",function(){appCacheNotifierClose()},!1),window.addEventListener("connectionerror",function(){appCacheNotifierOpen("Error: There was a connection error","ConnectionError"),setTimeout(function(){appCacheNotifierClose()},3e3)},!1),window.applicationCache.addEventListener("checking",function(){appCacheNotifierOpen("Checking for updates…","Checking")},!1),window.applicationCache.addEventListener("cached",function(){appCacheNotifierOpen("Finished downloading. This is now available offline.","Cached"),setTimeout(function(){appCacheNotifierClose()},3e3)},!1),window.applicationCache.addEventListener("downloading",function(){appCacheNotifierOpen("Downloading resources…","Downloading")},!1),window.applicationCache.addEventListener("progress",function(e){appCacheNotifierOpen("Downloading resources: "+e.loaded+" of "+e.total+appCacheSize,"Progress")},!1),window.applicationCache.addEventListener("error",function(){appCacheNotifierOpen("You are offline","Error"),setTimeout(function(){appCacheNotifierClose()},3e3)},!1),window.applicationCache.addEventListener("noupdate",function(){appCacheNotifierOpen("No updates","Noupdate"),setTimeout(function(){appCacheNotifierClose()},3e3)},!1),window.applicationCache.addEventListener("obsolete",function(){appCacheNotifierOpen("Error: Unable to reach manifest file. This is now unavailable offline.","Obsolete"),setTimeout(function(){appCacheNotifierClose()},3e3)},!1),window.applicationCache.addEventListener("updateready",function(){window.applicationCache.status==window.applicationCache.UPDATEREADY&&(appCacheNotifierOpen("Updating…","Updateready"),window.location.reload())},!1)},!1),appCache.update();</script>
     <style>
       #appCacheNotifier {
-        background-color: #323232;
-        border-radius: 2px;
-        box-shadow: 0 6px 20px rgba(0,0,0,0.19), 0 8px 17px rgba(0,0,0,.2);
         -moz-box-sizing: border-box;
         -webkit-box-sizing: border-box;
         box-sizing: border-box;
         bottom: 8px;
-        color: white;
         cursor: pointer;
         font-size: 14px;
         max-height: 48px;
-        min-height: 48px;
+        min-height: 72px;
         left: 24px;
         line-height: 20px;
         max-width: 568px;
@@ -280,14 +276,19 @@
         bottom: 24px;
         opacity: 1;
       }
+      #appCacheNotifier::before {
+        content: 'Offline mode';
+        display: block;
+        font-size: 12px;
+        font-weight: bold;
+        text-transform: uppercase;
+      }
 
       @media (max-width: 767px) {
         #appCacheNotifier {
-          border-radius: 0;
-          box-shadow: 0 -2px 10px rgba(0,0,0,0.16), 0 -2px 5px rgba(0,0,0,.26), 0 2px 0 #5a5a5a inset;
           bottom: -66px;
-          max-height: 80px;
-          min-height: 56px;
+          max-height: 104px;
+          min-height: 80px;
           left: 0;
           max-width: 100%;
           padding: 18px 24px;
