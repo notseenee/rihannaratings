@@ -1,0 +1,12 @@
+CACHE MANIFEST
+
+CACHE:
+index.html
+material.min.css
+material.min.js
+rihanna.png
+
+NETWORK:
+*
+http://*
+https://*
