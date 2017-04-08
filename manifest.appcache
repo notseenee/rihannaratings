@@ -1,50 +1,12 @@
-<?php
-// From http://grinninggecko.com/2010/12/14/dynamic-cache-manifest/
+CACHE MANIFEST
 
-// Add the correct Content-Type for the cache manifest
-header('Content-Type: text/cache-manifest');
+CACHE:
+index.html
+material.min.css
+material.min.js
+rihanna.png
 
-// Write the first line
-echo "CACHE MANIFEST\n";
-
-// Write source
-echo "# From http://grinninggecko.com/2010/12/14/dynamic-cache-manifest/\n";
-
-// Additional files
-
-
-// Initialize the $hashes string
-$hashes = "";
-
-$dir = new RecursiveDirectoryIterator(".");
-
-// Iterate through all the files/folders in the current directory
-foreach(new RecursiveIteratorIterator($dir) as $file) {
-  $info = pathinfo($file);
-
-  // If the object is a file
-  // and it's not called manifest.appcache (this file), index.php, or nocache.php
-  // and it's not a dotfile, add it to the list
-  if ($file->IsFile() && preg_match('#^\./ogg/#', $file) || preg_match('#^\./img/#', $file)) {}
-  elseif ($file->IsFile() && $file != "./manifest.appcache" && $file != "./ogg.appcache" && $file != "./index.php" && $file != "./ogg.php" && $file != "./nocache.php" && substr($file->getFilename(), 0, 1) != ".") {
-    // Replace spaces with %20 or it will break
-    // Also removes unnecessary ./
-    $fileSpace = str_replace(' ', '%20', $file);
-    echo str_replace('./', '', $fileSpace) . "\n";
-
-    // Add this file's hash to the $hashes string
-    $hashes .= md5_file($file);
-  }
-  elseif ($file == "./manifest.appcache" || $file == "./index.php") {
-    // Add manifest.appcache's hashes to the $hashes string
-    $hashes .= md5_file($file);
-  }
-}
-
-// Hash the $hashes string and output
-echo "# Hash: " . md5($hashes) . "\n";
-
-// Network section
-//echo "\nNETWORK:\n*\n./manifest.appcache\n";
-echo "\nNETWORK:\n*\nhttp://*\nhttps://*";
-?>
+NETWORK:
+*
+http://*
+https://*
