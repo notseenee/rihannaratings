@@ -1,4 +1,4 @@
-# [Rihanna Ratings (rihannaratings.tk)](rihannaratings.tk)
+# [Rihanna Ratings (rihannaratings.tk)](http://rihannaratings.tk)
 A robust system to rate your favourite things.
 
 **NOTE:** The rating scale must always be a **prime number**.
