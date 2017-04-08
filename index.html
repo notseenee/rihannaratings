@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html manifest="manifest.appcache">
+
+  <head>
+    <meta charset="utf-8">
+    <title>Rihanna Ratings</title>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0">
+
+    <link rel="stylesheet" href="./material.min.css">
+
+    <style>
+      body {
+        background-color: #f5f5f5;
+        font-family: system, -apple-system, BlinkMacSystemFont, sans-serif;
+        font-size: 16px;
+        margin: 0 auto;
+        padding: 20px 0;
+        width: 320px;
+      }
+      #controls {
+        text-align: center;
+      }
+      h1,
+      h2,
+      .mdl-textfield__input,
+      .mdl-button {
+        font-family: inherit;
+        font-weight: bold;
+      }
+      h1 {
+        font-size: 30px;
+        font-weight: normal;
+        letter-spacing: 0;
+        margin: 0;
+      }
+      .mdl-textfield {
+        width: 35%;
+      }
+      .mdl-textfield__input {
+        font-size: 30px;
+      }
+      #num {
+        text-align: right;
+      }
+      .mdl-textfield__label {
+        top: 36px;
+      }
+      button {
+        margin-bottom: 8px;
+      }
+      h2 {
+        font-size: 1em;
+        font-weight: bold;
+        line-height: 1;
+        margin: 20px 10px 5px;
+        text-align: left;
+      }
+      p {
+        margin: 0;
+        padding: 0 10px;
+        text-align: left;
+      }
+      ul,
+      ol {
+        margin: 0 0 10px;
+        padding: 0 5px;
+        text-align: left;
+      }
+      li {
+        padding: 0 0 5px 5px;
+      }
+      #helpinfo,
+      .rated {
+        display: none;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="controls">
+      <img src="rihanna.png" width="100" height="100" id="rihanna" />
+      <h1>How many Rihannas?</h1>
+      <div class="mdl-textfield mdl-js-textfield"><input class="mdl-textfield__input" pattern="-?[0-9]*(\.[0-9]+)?" id="num" type="number" onkeyup="return numHandler(event)" autofocus><label class="mdl-textfield__label" for="num"></label><span class="mdl-textfield__error">Input is not a number!</span></div><span style="font-size:30px">&nbsp;/&nbsp;</span><div class="mdl-textfield mdl-js-textfield"><input class="mdl-textfield__input" pattern="-?[0-9]*(\.[0-9]+)?" id="den" type="number" onkeyup="return denHandler(event)"><label class="mdl-textfield__label" for="den"></label><span class="mdl-textfield__error">Input is not a number!</span></div>
+      <br>
+      <button id="done" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored">Done</button><br>
+      <button id="help" class="mdl-button mdl-js-button mdl-button--colored mdl-js-ripple-effect">Help</button>
+      <div id="helpinfo">
+        <h2>HOW TO USE</h2>
+        <ol>
+          <li>Enter your rating in the two boxes above, e.g., 17/17</li>
+          <li>Click/tap done or press the Enter key.</li>
+          <li>Right click/tap and hold the image that appears and click/tap &lsquo;Save image&rsquo;.</li>
+          <li>Refresh the page to make a new rating.</li>
+        </ol>
+        <h2>NOTE</h2>
+        <p>Decimals will be rounded up, e.g. 1.2 &rarr; 2</p>
+        <h2>VERSION 1.1</h2>
+        <p>Updated 21 Apr 2016</p>
+        <button id="classic" class="mdl-button mdl-js-button mdl-button--colored mdl-js-ripple-effect">Classic</button>
+      </div>
+    </div>
+    <canvas id="canvas" width="1280" height="1280" class="rated"></canvas>
+    <img width="320" height="320" id="canvasImg" class="rated" /><br>
+    <button id="copylink" class="mdl-button mdl-js-button mdl-button--colored mdl-js-ripple-effect rated">Copy link</button>
+    <button id="new" class="mdl-button mdl-js-button mdl-button--colored mdl-js-ripple-effect rated">New rating</button>
+
+    <script>
+      if (window.location.hash) {
+        var hash = window.location.hash.substr(1),
+        slashPos = hash.indexOf('/'),
+            num1 = hash.substr(0,slashPos),
+            num2 = hash.substr(slashPos+1);
+        console.log('  hash: '+num1+' / '+num2);
+        document.getElementById('num').value = num1;
+        document.getElementById('den').value = num2;
+        generateRating(num1, num2);
+      }
+      function numHandler(e) {
+        if (e.keyCode == 13) {
+          document.getElementById('done').click();
+        }
+        if (e.keyCode == 191) {
+          document.getElementById('den').focus();
+        }
+      }
+      function denHandler(e) {
+        if (e.keyCode == 13) {
+          document.getElementById('done').click();
+        }
+      }
+      document.getElementById('done').onclick = function() {
+        var num = document.getElementById('num').value,
+            den = document.getElementById('den').value;
+        window.location.hash = "#" + num  + '/' + den;
+        generateRating(num, den);
+      };
+      document.getElementById('help').onclick = function() {
+        document.getElementById('helpinfo').style.display = 'block';
+        this.style.display = "none";
+      };
+      document.getElementById('classic').onclick = function() {
+        window.location.href="http://seenee.tk/rihanna/1.0.html";
+      };
+      document.getElementById('copylink').onclick = function() {
+        window.prompt('URL:', window.location.href);
+      };
+      document.getElementById('new').onclick = function() {
+        window.location.hash = "";
+        window.location.reload();
+      };
+      function generateRating(num, den) {
+        var width = document.getElementById('canvas').getAttribute('width'),
+            height = document.getElementById('canvas').getAttribute('height');
+        if ( isNaN(num) || isNaN(den) ) {
+          alert('One of the inputs is not a number');
+        }
+        else if ( num.length == 0 || den.length == 0 ) {
+          alert('One of the boxes is blank');
+        }
+        else {
+          var canvas = document.getElementById('canvas');
+          document.getElementById('controls').style.display = 'none';
+          if (canvas.getContext) {
+            var ctx = canvas.getContext('2d');
+
+            ctx.rect(0,0,width,height);
+            ctx.fillStyle = '#fff';
+            ctx.fill();
+
+            ctx.fillStyle = '#f44336';
+            ctx.font = '144px system, -apple-system, BlinkMacSystemFont, sans-serif';
+            ctx.textAlign = 'right';
+            ctx.textBaseline = 'top';
+            ctx.fillText(num, 585, 4);
+
+            ctx.textAlign = 'left';
+            ctx.fillText(den, 700, 4);
+
+            ctx.beginPath();
+            ctx.moveTo(650, 52);
+            ctx.lineTo(660, 52);
+            ctx.lineTo(632, 132);
+            ctx.lineTo(622, 132);
+            ctx.fillStyle = '#b71c1c';
+            ctx.fill();
+
+            ctx.textAlign = 'center';
+            ctx.font = 'bold 64px system, -apple-system, BlinkMacSystemFont, sans-serif';
+            ctx.fillText('RIHANNAS', width/2, 156);
+
+            ctx.font = '64px system, -apple-system, BlinkMacSystemFont, sans-serif';
+            ctx.fillStyle = '#e57373';
+            ctx.fillText('seenee.tk/rihanna', width/2, 1180, width);
+
+            var img = new Image(),
+                sizeDetermined = false,
+                size = 1,
+                larger = Math.max(num,den),
+                rows, dimension;
+            img.src = 'rihanna.png';
+            while (sizeDetermined == false) {
+              dimension = width/size;
+              rows = Math.ceil(larger/size);
+              if (rows*dimension > 936) { size++; }
+              else { sizeDetermined = true; }
+            }
+            function drawRihanna(numOrDen) {
+              var  x = 0,
+                   y = 244,
+              xcount = 1,
+              ycount = 1,
+              i;
+              for (i = 0; i < numOrDen; i++) {
+                //console.log(xcount+' '+ycount+' '+i);
+                ctx.imageSmoothingEnabled = true;
+                ctx.drawImage(img,x,y,dimension,dimension);
+                x += dimension;
+                xcount++;
+                if (xcount > size) {
+                  x = 0;
+                  xcount = 1;
+                  y += dimension;
+                  ycount++;
+                }
+              }
+            }
+            img.onload = function() {
+              drawRihanna(num);
+              ctx.globalAlpha = 0.25;
+              drawRihanna(den);
+              ctx.globalAlpha = 1;
+              console.log('  size: '+width/size+'\n  cols: '+size+'\n  rows: '+rows+'\nrating: '+num+' / '+den+'\nlarger: '+larger);
+              var dataURL = canvas.toDataURL('image/jpeg', 0.9);
+              document.getElementById('canvasImg').src = dataURL;
+              document.getElementById('canvasImg').style.display = 'block';
+              document.getElementById('copylink').style.display = 'inline-block';
+              document.getElementById('new').style.display = 'inline-block';
+            };
+          }
+          else {
+            alert('Error: Your browser doesn\'t support Rihanna Ratings. Upgrade to a modern browser.');
+          }
+        }
+      }
+    </script>
+
+    <script src="./material.min.js"></script>
+
+    <!-- app cache updater -->
+    <div id="appCacheNotifier" class="updated" style="display:none"></div>
+    <script>function appCacheNotifierOpen(e,a){appCacheNotifier.style.display="block",appCacheNotifier.className="active",appCacheNotifier.innerHTML=e,console.log("[appCache] "+a+" - Notifer message: "+e)}function appCacheNotifierClose(){appCacheNotifier.className="",setTimeout(function(){appCacheNotifier.style.display="none"},200)}var fireEvent=function(e,a){var i=document.createEvent("Event");i.initEvent(e,!0,!0),i.data=a,window.dispatchEvent(i)},fetch=function(e){var i=new XMLHttpRequest,n=setTimeout(function(){i.abort()},maxWaitTime);i.onreadystatechange=function(){4==i.readyState&&(200==i.status?clearTimeout(n):fireEvent("connectionerror",{}))},i.open("GET",e),i.send()},appCache=window.applicationCache,appCacheNotifier=document.getElementById("appCacheNotifier"),appCacheSize,bodyClass=document.body.className;appCache.status==window.applicationCache.UPDATEREADY&&appCache.swapCache(),window.addEventListener("load",function(){document.getElementById("appCacheNotifier").addEventListener("click",function(){appCacheNotifierClose()},!1),window.addEventListener("connectionerror",function(){appCacheNotifierOpen("Error: There was a connection error","ConnectionError"),setTimeout(function(){appCacheNotifierClose()},3e3)},!1),window.applicationCache.addEventListener("checking",function(){appCacheNotifierOpen("Checking for updates…","Checking")},!1),window.applicationCache.addEventListener("cached",function(){appCacheNotifierOpen("Finished downloading. This is now available offline.","Cached"),setTimeout(function(){appCacheNotifierClose()},3e3)},!1),window.applicationCache.addEventListener("downloading",function(){appCacheNotifierOpen("Downloading resources…","Downloading")},!1),window.applicationCache.addEventListener("progress",function(e){appCacheNotifierOpen("Downloading resources: "+e.loaded+" of "+e.total+appCacheSize,"Progress")},!1),window.applicationCache.addEventListener("error",function(){appCacheNotifierOpen("You are offline","Error"),setTimeout(function(){appCacheNotifierClose()},3e3)},!1),window.applicationCache.addEventListener("noupdate",function(){appCacheNotifierOpen("No updates","Noupdate"),setTimeout(function(){appCacheNotifierClose()},3e3)},!1),window.applicationCache.addEventListener("obsolete",function(){appCacheNotifierOpen("Error: Unable to reach manifest file. This is now unavailable offline.","Obsolete"),setTimeout(function(){appCacheNotifierClose()},3e3)},!1),window.applicationCache.addEventListener("updateready",function(){window.applicationCache.status==window.applicationCache.UPDATEREADY&&(appCacheNotifierOpen("Updating…","Updateready"),window.location.reload())},!1)},!1),appCache.update();</script>
+    <style>
+      #appCacheNotifier {
+        background-color: #323232;
+        border-radius: 2px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.19), 0 8px 17px rgba(0,0,0,.2);
+        -moz-box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        bottom: 8px;
+        color: white;
+        cursor: pointer;
+        font-size: 14px;
+        max-height: 48px;
+        min-height: 48px;
+        left: 24px;
+        line-height: 20px;
+        max-width: 568px;
+        min-width: 288px;
+        opacity: 0;
+        padding: 14px 24px;
+        position: fixed;
+        transition: all .2s;
+        z-index: 100;
+      }
+      #appCacheNotifier.active {
+        bottom: 24px;
+        opacity: 1;
+      }
+
+      @media (max-width: 767px) {
+        #appCacheNotifier {
+          border-radius: 0;
+          box-shadow: 0 -2px 10px rgba(0,0,0,0.16), 0 -2px 5px rgba(0,0,0,.26), 0 2px 0 #5a5a5a inset;
+          bottom: -66px;
+          max-height: 80px;
+          min-height: 56px;
+          left: 0;
+          max-width: 100%;
+          padding: 18px 24px;
+          width: 100%;
+        }
+        #appCacheNotifier.active {
+          bottom: 0;
+        }
+      }
+    </style>
+    <script>appCacheSize = ' (175 KB)';</script>
+
+  </body>
+</html>
